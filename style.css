@@ -1,0 +1,40 @@
+body {
+    max-width: 100%;;
+    font-family: sans-serif;
+    background-color: #3f3f3f;
+    color: white;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+}
+
+a:visited {
+    color: gray;
+    text-decoration: none;
+}
+
+#listings_parent {
+    display: flex;
+    min-width: 0;
+    flex-wrap: wrap;
+
+}
+
+.listing_view {
+    width: fit-content;
+    background-color: #0f0f0f;
+    margin: 1rem;
+    border: 2px;
+    border-color: white;
+    border-radius: 2px;
+    box-shadow: 2px 2px 2px rgba(0.1,0.1,0.1,0.1);
+    flex-grow:1;
+    text-align: center;
+}
+
+.center {
+    text-align: center;
+    justify-items: center;
+}

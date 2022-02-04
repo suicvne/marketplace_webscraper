@@ -1,7 +1,22 @@
 const { exec } = require('child_process');
 const puppeteer = require('puppeteer');
 
-const this_url = 'https://www.facebook.com/marketplace/orlando/search?query=e320%20cdi%20';
+// const this_url = 'https://www.facebook.com/marketplace/orlando/search?query=e320%20cdi%20';
+const this_url = 'https://www.facebook.com/marketplace/orlando/search?query=sprinter';
+const base_url = 'https://www.facebook.com/marketplace/orlando/';
+
+async function makeMarketplaceURLBySearch(search_query)
+{
+    return new URL(base_url + `search?query=${encodeURIComponent(search_query)}`);
+}
+
+async function getSearchTermByURL(url)
+{
+    if(url === undefined) return undefined;
+
+    let searchParams = url.searchParams;
+    return searchParams.get('query')
+}
 
 async function generateHTMLOutput(fb_input_arr) {
     const cheerio = require('cheerio');
@@ -28,8 +43,10 @@ async function generateHTMLOutput(fb_input_arr) {
 }
 
 async function extractListings(page, filter) {
+    console.log("[extractListings]", typeof(filter));
     return await page.evaluate(async (_filter) =>
     {
+        console.log("[extractListings page.evaluate]", typeof(filter));
         class FbMarketplaceListing {
             constructor(listing_dom_parent) {
 
@@ -69,7 +86,7 @@ async function extractListings(page, filter) {
         {
             // const filter_regex = _filter;
             // TODO: Troubleshoot why passing this filter in as a parameter gives trouble.
-            const filter_regex = undefined;///(?<a>\bbluetec\b)|(?<b>\bcdi\b)|(?<c>\bdiesel\b)/i;
+            const filter_regex = /(?<a>\bbluetec\b)|(?<b>\bcdi\b)|(?<c>\bdiesel\b)/i;
 
             const selector_2 = 'div.b3onmgus.ph5uu5jm.g5gj957u.buofh1pr.cbu4d94t.rj1gh0hx.j83agx80.rq0escxv.fnqts5cd.fo9g3nie.n1dktuyu.e5nlhep0.ecm0bbzt';
             let c = document.querySelectorAll(selector_2);
@@ -101,14 +118,13 @@ async function extractListings(page, filter) {
     }, filter);
 }
 
-async function autoScroll(page) {
-    return await page.evaluate(async () =>
+async function autoScroll(page, quick_test_mode) {
+    return await page.evaluate(async (_quick_test_mode) =>
     {
         return await new Promise((resolve, reject) => 
         {
             let totalHeight = 0;
-            // let distance = 100;
-            let distance = 500;
+            let distance = _quick_test_mode ? 500 : 100;
 
             var timer = setInterval(() => {
                 let scrollHeight = document.body.scrollHeight;
@@ -122,7 +138,7 @@ async function autoScroll(page) {
                 }
             }, 100);
         })
-    });
+    }, quick_test_mode);
 }
 
 let runTypes =
@@ -163,6 +179,17 @@ let args =
     },
     FullRun = async (args) => 
     {
+        const fs = require('fs');
+        const quick_mode = args.includes("quick");
+        const basic_filter = args.includes("basic_filter");
+
+        let this_regex = undefined;
+        if(basic_filter)
+        {
+            // Generate a regex filter based on search keywords.
+
+        }
+
         const browser_instance = await puppeteer.launch(
             {
                 headless: false,
@@ -172,10 +199,13 @@ let args =
         );
         const page = await browser_instance.newPage();
         await page.goto(this_url);
-        await autoScroll(page);
-        let listing_count = await extractListings(page, /(?<a>\bbluetec\b)|(?<b>\bcdi\b)|(?<c>\bdiesel\b)/i);
+        await autoScroll(page, args[0] == "quick");
+
+        
+        let preferred_regex = new RegExp('/(?<a>\\bbluetec\\b)|(?<b>\\bcdi\\b)|(?<c>\\bdiesel\\b)/i');
+        let listing_count = await extractListings(page, preferred_regex);
         console.log("total listings scraped: ", listing_count.length);
-        const fs = require('fs');
+        
     
         
         await ExportJson(["--export", listing_count]);
@@ -186,6 +216,7 @@ let args =
     }
 ];
 
+// TODO: Make this much better.
 async function execArg(arg) {
     const arg_delim1 = '=';
     const arg_delim2 = ',';
@@ -200,16 +231,24 @@ async function execArg(arg) {
         case "--help":
         case "-h":
         case "--helpme":
-            Help(params);
+            await Help(params);
             break;
         case "-j":
         case "--parse-only":
         case "--parse-json":
         case "--json":
-            ParseJsonOnly(params);
+            await ParseJsonOnly(params);
+            break;
+        case "--search":
+            console.log(full_args, params);
+            console.log("search: ", params[0]);
+            await FullRun(["search", params[0]]);
+            break;
+        case "--quick-test":
+            await FullRun(["quick"]);
             break;
         default:
-            console.log("\n", full_args[0], "\nUnknown command. Please check help using '--help'.");
+            console.log("\nERROR:", full_args[0], "\nUnknown command. Please check help using '--help'.");
     }
 }
 
@@ -224,6 +263,7 @@ async function checkArgv() {
     }
     else await FullRun(); // Default run mode.
 }
+
 // Async Closure
 (async () =>
 {
