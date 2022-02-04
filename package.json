@@ -1,0 +1,21 @@
+{
+  "name": "marketplace_webscraper",
+  "version": "1.0.0",
+  "description": "E320 CDI Scraper",
+  "main": "index.js",
+  "scripts": {
+    "test": "start"
+  },
+  "keywords": [
+    "e320",
+    "cdi"
+  ],
+  "author": "Axom",
+  "license": "WTFPL",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.10",
+    "nightmare": "^3.0.2",
+    "open": "^8.4.0",
+    "puppeteer": "^13.1.3"
+  }
+}
