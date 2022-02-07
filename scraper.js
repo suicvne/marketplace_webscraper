@@ -75,7 +75,7 @@ async function extractListings(page, filter) {
                     const r = /\b(19|20)\d{2}\b/;
                     let matches = listing_title.match(r);
                     
-                    return ((matches != null && matches.length > 0) ? matches[0] : 'N/A');
+                    return ((matches != null && matches.length > 0) ? Number(matches[0]) : 'N/A');
                 }
 
 
@@ -288,7 +288,7 @@ async function FullRun (args) {
 
     const browser_instance = await puppeteer.launch(
         {
-            headless: false,
+            headless: true,
             slowMo: 250,
             devtools: true
         }

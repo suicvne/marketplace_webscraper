@@ -25,6 +25,7 @@ function bindEvents() {
     ipcRenderer.on('search-results', (event, args) => {
         console.log('search-results');
         console.log('results: ', args);
+        setSearchingOverlayVisible(false);
         bindSearchResultsToFrontend(args);
     });
 
@@ -39,11 +40,12 @@ function askShellOpen(url) {
 }
 
 function getYearMinMax() {
-    let use = document.querySelector("#input_use_year_filter").value;
+    let use = document.querySelector("#input_use_year_filter").checked;
+    console.log("use filter", use);
     let min = Number(document.querySelector("#input_min_year").value);
     let max = Number(document.querySelector("#input_max_year").value);
 
-    return use === "on" ? {"min": min, "max": max, "use": use} : false;
+    return use ? {"min": min, "max": max, "use": use} : false;
 }
 
 function bindSearchResultsToFrontend(search_results) {
@@ -112,15 +114,60 @@ function bindSearchResultsToFrontend(search_results) {
     });
 }
 
+function writeSettings() {
+    window.localStorage.setItem('use', document.querySelector('#input_use_year_filter').checked);
+    window.localStorage.setItem('min', document.querySelector("#input_min_year").value);
+    window.localStorage.setItem('max', document.querySelector("#input_max_year").value);
+    window.localStorage.setItem('last_query', document.querySelector("#input_search_text").value);
+}
+
+function getSettings() {
+    let a = 
+    {
+        "use": window.localStorage.getItem('use'),
+        "min": window.localStorage.getItem('min'),
+        "max": window.localStorage.getItem('max'),
+        "last_query": window.localStorage.getItem('last_query')
+    };
+
+    return a;
+}
+
+function updateFilterDefaults() {
+    let settings = getSettings();
+
+    document.querySelector('#input_use_year_filter').checked = settings.use;
+    document.querySelector("#input_min_year").value = settings.min;
+    document.querySelector("#input_max_year").value = settings.max;
+    document.querySelector("#input_search_text").value = settings.last_query;
+
+}
+
+function setSearchingOverlayVisible(visible) {
+    document.querySelector('.overlay').style.display = visible ? 'block' : 'none';
+}
+
+window.addEventListener('beforeunload', () => writeSettings());
+
 window.addEventListener('DOMContentLoaded', () => {
+
+    updateFilterDefaults();
+
     document.querySelector('#input_search_submit').addEventListener('click', () =>
     {
+        setSearchingOverlayVisible(true);
         doSearch(false);
     });
 
     document.querySelector('#input_search_submit_quick').addEventListener('click', () =>
     {
+        setSearchingOverlayVisible(true);
         doSearch(true);
+    });
+
+    document.querySelector("#input_filter").addEventListener('click', () => {
+        writeSettings(); // Write settings
+        bindSearchResultsToFrontend(undefined); // Bind search results with filter. No need to requery for this.
     });
 
     ipcRenderer.send('frontend-ready');

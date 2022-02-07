@@ -33,6 +33,7 @@
                 border-width: .25em; */
                 align-items: center;
                 justify-content: center;
+                margin-bottom: 2em;
             }
 
             .search_result {
@@ -82,16 +83,28 @@
                 width: 100%;
                 height: 100%;
                 background-color: rgba(0, 0, 0, .7);
+                text-align: center;
+                
+            }
+
+            .overlay div {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                right: -50%;
+                left: -50%;
+                font-size: 3em;
+                font-weight: 900;
             }
             
         </style>
     </head>
     <body>
-        
-        <!-- <div id="searching_overlay" class="overlay">
-            Searching....
-
-        </div> -->
+        <div id="searching_overlay" class="overlay" style="display: none;">
+            <div>
+                Searching....
+            </div>
+        </div>
         <div id="parent">
             <h3 style="margin-bottom: 2px;">Facebook Marketplace Web Scraper</h3>
             <h4 style="margin-top: 2px; font-weight: 500;">by Mike Santiago</h4>
@@ -106,6 +119,7 @@
                     <input id="input_min_year" type="number" min="1900" max="9999" value="2000">
                     <label for="input_max_year">Max Year</label>
                     <input id="input_max_year" type="number" min="1900" max="9999" value="2008">
+                    <input id="input_filter" value="Filter" type="button">
                 </div>
                 <div>
                     <p id="base_url" style="display: inline-block;"></p>

@@ -68,8 +68,8 @@ async function setupIpcHandlers() {
 
  const createWindow = async () => {
      const win = new BrowserWindow({
-         width: 800,
-         height: 600,
+         width: 900,
+         height: 800,
          webPreferences: {
             nodeIntegration: true,
             preload: path.join(__dirname, '/frontend_index_preload.js')
