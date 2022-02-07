@@ -1,0 +1,129 @@
+<html>
+    <head>
+        <title>Facebook Marketplace Web Scraper</title>
+        <style>
+            body {
+                background-color: #1f1f1f;
+                color: white;
+                font-family: sans-serif;
+                width: 100vw;
+                /* height: 100vh; */
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            #parent {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+            }
+
+            #search_results {
+                display: flex;
+                flex-wrap: wrap;
+                max-width: 100%;
+                max-height: 85%;
+                min-height: 50%;
+                overflow-y: scroll;
+                /* border-style: solid;
+                border-color: white;
+                border-radius: 1em;
+                border-width: .25em; */
+                align-items: center;
+                justify-content: center;
+            }
+
+            .search_result {
+                background-color: #4f4f4f;
+                margin: 1em;
+                padding: 0.25em;
+                max-width: 20em;
+                min-width: 20em;
+                height: auto;
+                /* flex-grow: 1; */
+                text-align: center;
+                justify-content: center;
+
+                transition: all 1s;
+                transform: scale(1);
+                box-shadow: 0px 0px 0px rgba(185, 185, 185, 0.144);
+            }
+
+            .search_result:hover {
+                transform: scale(1.02);
+                box-shadow: 2px 2px 2px rgba(185, 185, 185, 0.7);
+            }
+
+            .search_result h3 {
+                font-size: minmax(14px, 22px);
+            }
+
+            .search_result a {
+                text-decoration: none;
+                color: white;
+            }
+
+            .search_result a:visited {
+                text-decoration: dashed;
+                color: white;
+            }
+
+            #search_area #input_search_text {
+                min-width: 65%;
+            }
+
+            .overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 99;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, .7);
+            }
+            
+        </style>
+    </head>
+    <body>
+        
+        <!-- <div id="searching_overlay" class="overlay">
+            Searching....
+
+        </div> -->
+        <div id="parent">
+            <h3 style="margin-bottom: 2px;">Facebook Marketplace Web Scraper</h3>
+            <h4 style="margin-top: 2px; font-weight: 500;">by Mike Santiago</h4>
+            <div id="search_area">
+                <input id="input_search_text" value="sprinter">
+                <input id="input_search_submit" type="submit" value="SEARCH!"></input>
+                <input id="input_search_submit_quick" type="submit" value="QUICK TEST!"></input>
+                <div style="display: block">
+                    <label for="input_use_year_filter">Use Years Filter</label>
+                    <input type="checkbox" id="input_use_year_filter" value="off">
+                    <label for="input_min_year">Min Year</label>
+                    <input id="input_min_year" type="number" min="1900" max="9999" value="2000">
+                    <label for="input_max_year">Max Year</label>
+                    <input id="input_max_year" type="number" min="1900" max="9999" value="2008">
+                </div>
+                <div>
+                    <p id="base_url" style="display: inline-block;"></p>
+                </div>
+            </div>
+            <div id="search_template" class="search_result" style="display: none;">
+                <!-- <a href="" target="_blank"> -->
+                    <!-- Wrap everything -->
+                    <div class="center">
+                        <img id="search_result_image">
+                    </div>
+                    <h3 id="search_result_title"></h3>
+                    <h4 id="search_result_price"></h4>
+                <!-- </a> -->
+            </div>
+            <div id="search_results">
+                
+            </div>
+        </div>
+    </body>
+</html>
