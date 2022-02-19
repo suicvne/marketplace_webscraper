@@ -2,12 +2,12 @@ const { exec } = require('child_process');
 const puppeteer = require('puppeteer');
 
 // const this_url = 'https://www.facebook.com/marketplace/orlando/search?query=e320%20cdi%20';
-const this_url = 'https://www.facebook.com/marketplace/orlando/search?query=sprinter';
+this_url = 'https://www.facebook.com/marketplace/orlando/search?query=sprinter';
 const base_url = 'https://www.facebook.com/marketplace/orlando/';
 
-async function makeMarketplaceURLBySearch(search_query)
+async function makeMarketplaceURLBySearch(search_query, and_exact)
 {
-    return new URL(base_url + `search?query=${encodeURIComponent(search_query)}`);
+    return new URL(base_url + `search?query=${encodeURIComponent(search_query)}` + (and_exact === true ? '&exact=false' : ''));
 }
 
 async function getSearchTermByURL(url)
@@ -138,11 +138,20 @@ async function generateRegexBySearchTerms(search_string) {
 
     searchTerms.forEach((x, i) =>
     {
+        // In the future, these could be interchangeable simply with some parameters.
+        // NEW "STRICT"
+        s += `(?=.*${x})`;
+
+
+        // OLD "LOOSE"
         // (?<a>\\bbluetec\\b)
-        s += (`(?<${letters[i]}>\\b${x}\\b)`)
-        if(i != searchTerms.length - 1)
-            s += append('|');
+        // s += (`(?<${letters[i]}>\\b${x}\\b)`)
+        // if(i != searchTerms.length - 1)
+            // s += '|';
+        
     });
+
+    s += '.*$';
 
     // s += '/i';
     return new RegExp(s, 'i');
@@ -164,7 +173,7 @@ async function autoScroll(page, quick_test_mode) {
                 totalHeight += distance;
 
                 if(totalHeight >= scrollHeight) {
-                    console.log("resolving. scrollHeight: ", scrollHeight);
+                    console.log("resolving. scrollHeight: ", totalHeight, "/", scrollHeight);
                     clearInterval(timer);
                     resolve();
                 }
@@ -275,6 +284,9 @@ async function FullRun (args) {
         console.error("ERROR: Search term was undefined. Args object received: ", args);
         return;
     }
+
+    this_url = await makeMarketplaceURLBySearch(args["search"], true);
+    console.log("new url: ", this_url);
 
     let this_regex = await generateRegexBySearchTerms(args["search"]);
     

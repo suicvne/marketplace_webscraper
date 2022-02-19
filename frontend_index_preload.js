@@ -49,7 +49,7 @@ function getYearMinMax() {
 }
 
 function bindSearchResultsToFrontend(search_results) {
-    if(search_results === undefined || search_results.length === 0)
+    if(search_results === undefined)
     {
         console.log('using new updated filters');
     }
