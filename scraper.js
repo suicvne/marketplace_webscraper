@@ -1,8 +1,11 @@
 const { exec } = require('child_process');
 const puppeteer = require('puppeteer');
 
+<<<<<<< HEAD
 // const this_url = 'https://www.facebook.com/marketplace/orlando/search?query=e320%20cdi%20';
 this_url = 'https://www.facebook.com/marketplace/orlando/search?query=sprinter';
+=======
+>>>>>>> 69152edd7e11c51d4b1bf153004077589c957c7f
 const base_url = 'https://www.facebook.com/marketplace/orlando/';
 
 async function makeMarketplaceURLBySearch(search_query, and_exact)
@@ -78,11 +81,10 @@ async function extractListings(page, filter) {
                     return ((matches != null && matches.length > 0) ? Number(matches[0]) : 'N/A');
                 }
 
-
-                const selector_cost = '.d2edcug0.hpfvmrgz.qv66sw1b.c1et5uql.oi732d6d.ik7dh3pa.ht8s03o8.a8c37x1j.fe6kdd0r.mau55g9w.c8b282yb.keod5gw0.nxhoafnm.aigsh9s9.d9wwppkn.iv3no6db.a5q79mjw.g1cxx5fr.lrazzd5p.oo9gr5id';
+                const selectorcost2 = '.d2edcug0.hpfvmrgz.qv66sw1b.c1et5uql.oo9gr5id';
                 const selector_title = '.a8c37x1j.ni8dbmo4.stjgntxs.l9j0dhe7';
 
-                this.listing_price = _extract_from(listing_dom_parent, selector_cost);
+                this.listing_price = _extract_from(listing_dom_parent, selectorcost2);
                 this.listing_title = _extract_from(listing_dom_parent, selector_title);
                 this.listing_url = _extract_href_from(listing_dom_parent, 'a');
                 this.listing_thumbnail = _extract_src_from(listing_dom_parent, 'img');
@@ -129,7 +131,6 @@ async function extractListings(page, filter) {
 }
 
 async function generateRegexBySearchTerms(search_string) {
-
     const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
 
     let searchTerms = search_string.split(' ');
@@ -270,7 +271,7 @@ async function checkArgv() {
     else await FullRun(); // Default run mode.
 }
 
-// Async Closure
+// Async entry point.
 async function FullRun (args) {
     if (args === undefined) {
         console.error("ERROR: No arguments provided. Exiting.");
@@ -285,9 +286,16 @@ async function FullRun (args) {
         return;
     }
 
+<<<<<<< HEAD
     this_url = await makeMarketplaceURLBySearch(args["search"], true);
     console.log("new url: ", this_url);
 
+=======
+    // Trim leading or trailing spaces
+    args["search"] = args["search"].trim();
+
+    let _this_url = await makeMarketplaceURLBySearch(args["search"]);
+>>>>>>> 69152edd7e11c51d4b1bf153004077589c957c7f
     let this_regex = await generateRegexBySearchTerms(args["search"]);
     
     if(this_regex === undefined)
@@ -296,7 +304,7 @@ async function FullRun (args) {
         return;
     }
 
-    console.log("search regex: ", this_regex);
+    console.log("some params...\n\tsearch regex: ", this_regex, "\n\turl: ", _this_url);
 
     const browser_instance = await puppeteer.launch(
         {
@@ -306,13 +314,11 @@ async function FullRun (args) {
         }
     );
     const page = await browser_instance.newPage();
-    await page.goto(this_url);
+    await page.goto(_this_url);
     await autoScroll(page, quick_mode);
 
     let listing_count = await extractListings(page, this_regex);
     console.log("total listings returned: ", listing_count.length);
-    // await ExportJson(["--export", listing_count]);
-    // await page.screenshot({path: 'test.png', fullPage: true});
     await page.close();
     await browser_instance.close();
 
@@ -323,8 +329,3 @@ async function FullRun (args) {
 
 module.exports.async_doScrape = FullRun;
 module.exports.base_url = base_url;
-
-// (async () =>
-// {
-//     await checkArgv();   
-// })();
