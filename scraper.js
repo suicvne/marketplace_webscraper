@@ -1,8 +1,6 @@
 const { exec } = require('child_process');
 const puppeteer = require('puppeteer');
 
-// const this_url = 'https://www.facebook.com/marketplace/orlando/search?query=e320%20cdi%20';
-const this_url = 'https://www.facebook.com/marketplace/orlando/search?query=sprinter';
 const base_url = 'https://www.facebook.com/marketplace/orlando/';
 
 async function makeMarketplaceURLBySearch(search_query)
@@ -128,7 +126,6 @@ async function extractListings(page, filter) {
 }
 
 async function generateRegexBySearchTerms(search_string) {
-
     const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
 
     let searchTerms = search_string.split(' ');
@@ -138,12 +135,12 @@ async function generateRegexBySearchTerms(search_string) {
     searchTerms.forEach((x, i) =>
     {
         // (?<a>\\bbluetec\\b)
+              /** letters[i] is used for a group name. then part of the search term is inserted between the \b \b */
         s += (`(?<${letters[i]}>\\b${x}\\b)`)
         if(i != searchTerms.length - 1)
-            s += append('|');
+            s += ('|');
     });
 
-    // s += '/i';
     return new RegExp(s, 'i');
 }
 
@@ -260,7 +257,7 @@ async function checkArgv() {
     else await FullRun(); // Default run mode.
 }
 
-// Async Closure
+// Async entry point.
 async function FullRun (args) {
     if (args === undefined) {
         console.error("ERROR: No arguments provided. Exiting.");
@@ -275,6 +272,10 @@ async function FullRun (args) {
         return;
     }
 
+    // Trim leading or trailing spaces
+    args["search"] = args["search"].trim();
+
+    let _this_url = await makeMarketplaceURLBySearch(args["search"]);
     let this_regex = await generateRegexBySearchTerms(args["search"]);
     
     if(this_regex === undefined)
@@ -283,7 +284,7 @@ async function FullRun (args) {
         return;
     }
 
-    console.log("search regex: ", this_regex);
+    console.log("some params...\n\tsearch regex: ", this_regex, "\n\turl: ", _this_url);
 
     const browser_instance = await puppeteer.launch(
         {
@@ -293,13 +294,11 @@ async function FullRun (args) {
         }
     );
     const page = await browser_instance.newPage();
-    await page.goto(this_url);
+    await page.goto(_this_url);
     await autoScroll(page, quick_mode);
 
     let listing_count = await extractListings(page, this_regex);
     console.log("total listings returned: ", listing_count.length);
-    // await ExportJson(["--export", listing_count]);
-    // await page.screenshot({path: 'test.png', fullPage: true});
     await page.close();
     await browser_instance.close();
 
@@ -310,8 +309,3 @@ async function FullRun (args) {
 
 module.exports.async_doScrape = FullRun;
 module.exports.base_url = base_url;
-
-// (async () =>
-// {
-//     await checkArgv();   
-// })();
