@@ -78,11 +78,10 @@ async function extractListings(page, filter) {
                     return ((matches != null && matches.length > 0) ? Number(matches[0]) : 'N/A');
                 }
 
-
-                const selector_cost = '.d2edcug0.hpfvmrgz.qv66sw1b.c1et5uql.oi732d6d.ik7dh3pa.ht8s03o8.a8c37x1j.fe6kdd0r.mau55g9w.c8b282yb.keod5gw0.nxhoafnm.aigsh9s9.d9wwppkn.iv3no6db.a5q79mjw.g1cxx5fr.lrazzd5p.oo9gr5id';
+                const selectorcost2 = '.d2edcug0.hpfvmrgz.qv66sw1b.c1et5uql.oo9gr5id';
                 const selector_title = '.a8c37x1j.ni8dbmo4.stjgntxs.l9j0dhe7';
 
-                this.listing_price = _extract_from(listing_dom_parent, selector_cost);
+                this.listing_price = _extract_from(listing_dom_parent, selectorcost2);
                 this.listing_title = _extract_from(listing_dom_parent, selector_title);
                 this.listing_url = _extract_href_from(listing_dom_parent, 'a');
                 this.listing_thumbnail = _extract_src_from(listing_dom_parent, 'img');
